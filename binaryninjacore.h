@@ -119,6 +119,8 @@ extern "C"
 	struct BNBinaryViewType;
 	struct BNBinaryReader;
 	struct BNBinaryWriter;
+	struct BNSnapshot;
+	struct BNDatabase;
 	struct BNFileMetadata;
 	struct BNTransform;
 	struct BNArchitecture;
@@ -2580,6 +2582,23 @@ __attribute__ ((format (printf, 1, 2)))
 	BINARYNINJACOREAPI bool BNSaveAutoSnapshot(BNBinaryView* data, BNSaveSettings* settings);
 	BINARYNINJACOREAPI bool BNSaveAutoSnapshotWithProgress(BNBinaryView* data, void* ctxt,
 		void (*progress)(void* ctxt, size_t progress, size_t total), BNSaveSettings* settings);
+	BINARYNINJACOREAPI BNDatabase* BNGetFileMetadataDatabase(BNFileMetadata* file);
+
+	// Database object
+	BINARYNINJACOREAPI BNDatabase* BNNewDatabaseReference(BNDatabase* database);
+	BINARYNINJACOREAPI void BNFreeDatabase(BNDatabase* database);
+	BINARYNINJACOREAPI BNSnapshot* BNGetDatabaseCurrentSnapshot(BNDatabase* database);
+	BINARYNINJACOREAPI BNSnapshot* BNGetDatabaseSnapshot(BNDatabase* database, int64_t id);
+
+	// Database snapshots
+	BINARYNINJACOREAPI BNSnapshot* BNNewSnapshotReference(BNSnapshot* snapshot);
+	BINARYNINJACOREAPI void BNFreeSnapshot(BNSnapshot* snapshot);
+	BINARYNINJACOREAPI int64_t BNGetSnapshotId(BNSnapshot* snapshot);
+	BINARYNINJACOREAPI BNSnapshot* BNGetSnapshotParent(BNSnapshot* snapshot);
+	BINARYNINJACOREAPI char* BNGetSnapshotName(BNSnapshot* snapshot);
+	BINARYNINJACOREAPI bool BNIsSnapshotAutoSave(BNSnapshot* snapshot);
+	BINARYNINJACOREAPI BNDataBuffer* BNGetSnapshotFileContents(BNSnapshot* snapshot);
+	BINARYNINJACOREAPI BNUndoEntry* BNGetSnapshotUndoEntries(BNSnapshot* snapshot, size_t* count);
 
 	BINARYNINJACOREAPI bool BNRebase(BNBinaryView* data, uint64_t address);
 	BINARYNINJACOREAPI bool BNRebaseWithProgress(BNBinaryView* data, uint64_t address, void* ctxt, void (*progress)(void* ctxt, size_t progress, size_t total));

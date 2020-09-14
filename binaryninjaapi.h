@@ -846,6 +846,29 @@ __attribute__ ((format (printf, 1, 2)))
 	};
 
 	struct InstructionTextToken;
+	struct UndoEntry;
+
+	class Snapshot: public CoreRefCountObject<BNSnapshot, BNNewSnapshotReference, BNFreeSnapshot>
+	{
+	public:
+		Snapshot(BNSnapshot* snapshot);
+
+		int64_t GetId();
+		std::string GetName();
+		bool IsAutoSave();
+		Ref<Snapshot> GetParent();
+		DataBuffer GetFileContents();
+		std::vector<UndoEntry> GetUndoEntries();
+	};
+
+	class Database: public CoreRefCountObject<BNDatabase, BNNewDatabaseReference, BNFreeDatabase>
+	{
+	public:
+		Database(BNDatabase* database);
+
+		Ref<Snapshot> GetSnapshot(int64_t id);
+		Ref<Snapshot> GetCurrentSnapshot();
+	};
 
 	struct UndoAction
 	{
@@ -918,6 +941,7 @@ __attribute__ ((format (printf, 1, 2)))
 		bool SaveAutoSnapshot(BinaryView* data, Ref<SaveSettings> settings);
 		bool SaveAutoSnapshot(BinaryView* data,
 			const std::function<void(size_t progress, size_t total)>& progressCallback, Ref<SaveSettings> settings);
+		Ref<Database> GetDatabase();
 
 		bool Rebase(BinaryView* data, uint64_t address);
 		bool Rebase(BinaryView* data, uint64_t address, const std::function<void(size_t progress, size_t total)>& progressCallback);
